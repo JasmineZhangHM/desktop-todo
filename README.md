@@ -58,18 +58,16 @@ python main.py
 - Windows: `%APPDATA%\DesktopTodo\todos.db`
 - macOS / Linux: `~/.desktop_todo/todos.db`
 
-## 数据隐私与演示模式
+## 数据隐私
 
-- 真实数据库、归档记录和本地开发日志均已通过 `.gitignore` 排除，不应提交到仓库。
-- `DemoData/` 仅包含虚构的客户 A/B、学习和生活记录，用于产品演示。
-- 双击 `start_demo.bat` 可在独立数据目录中启动演示模式，不会读取或修改真实用户数据。
+真实数据库、归档记录和本地开发日志均已通过 `.gitignore` 排除，不应提交到仓库。
+本仓库不附带任何真实数据或示例数据。
 
 ## 打包成 exe（Windows）
 ```powershell
 pip install pyinstaller
 pyinstaller --noconfirm --onefile --windowed ^
   --name DesktopTodo ^
-  --add-data "assets;assets" ^
   --add-data "app/webcal;app/webcal" ^
   main.py
 ```
