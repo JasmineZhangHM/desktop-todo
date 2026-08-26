@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>日历 · 桌面悬浮备忘</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="offline-banner" class="offline-banner" hidden>⚠️ 无法连接应用——桌面悬浮备忘可能已退出，请重新从托盘打开日历。</div>
+
+<nav class="view-tabs">
+  <button id="tab-calendar" class="view-tab active">📅 日历</button>
+  <button id="tab-analytics" class="view-tab">📊 分析</button>
+</nav>
+
+<div id="view-calendar">
+<div class="layout">
+  <aside class="sidebar">
+    <section class="side-card">
+      <h2 class="side-header">便签筛选</h2>
+      <div id="board-bar" class="tag-bar"></div>
+    </section>
+    <section class="side-card">
+      <h2 class="side-header">标签筛选</h2>
+      <div id="tag-bar" class="tag-bar"></div>
+    </section>
+    <section class="side-card grow">
+      <h2 class="side-header">未安排日期 <span class="hint">拖到日期格排期，拖回这里取消日期</span></h2>
+      <ul id="unscheduled" class="unscheduled"></ul>
+    </section>
+  </aside>
+
+  <main class="main">
+    <header class="cal-nav">
+      <div class="nav-left">
+        <button id="prev-month" class="nav-btn" title="上一月">◀</button>
+        <span id="month-title" class="month-title"></span>
+        <button id="next-month" class="nav-btn" title="下一月">▶</button>
+        <button id="today-btn" class="nav-btn today-btn">今天</button>
+        <div class="mode-switch">
+          <button class="mode-btn" data-mode="month">月</button>
+          <button class="mode-btn" data-mode="biweek">双周</button>
+          <button class="mode-btn" data-mode="week">周</button>
+        </div>
+      </div>
+      <div id="board-legend" class="board-legend"></div>
+    </header>
+    <div class="weekday-row">
+      <span class="we">日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span class="we">六</span>
+    </div>
+    <div id="grid" class="grid"></div>
+  </main>
+</div>
+</div>
+
+<div id="view-analytics" hidden>
+  <div class="an-wrap">
+    <div class="an-header">
+      <h1>✅ 已完成回顾</h1>
+    </div>
+    <div id="an-empty" class="an-empty" hidden>
+      <div class="icon">📭</div>
+      <h2>还没有已完成的记录</h2>
+      <p>完成一些待办，或在「已完成历史」里存档过的记录都会出现在这里～</p>
+    </div>
+    <div id="an-content">
+      <div class="an-panel an-date-panel">
+        <div class="an-date-head">
+          <div class="an-panel-title">日期范围</div>
+          <div class="an-range" id="an-range"></div>
+        </div>
+        <div class="an-chips" id="an-range-bar"></div>
+        <div class="an-range-custom">
+          <input type="date" id="an-date-from" aria-label="起始日期">
+          <span>～</span>
+          <input type="date" id="an-date-to" aria-label="结束日期">
+          <button type="button" id="an-range-reset" class="an-range-reset">重置</button>
+        </div>
+      </div>
+      <div class="an-stats" id="an-stats"></div>
+      <div class="an-panel">
+        <div class="an-panel-title">筛选</div>
+        <div class="an-filter-block" id="an-board-block">
+          <div class="an-filter-label">便签</div>
+          <div class="an-chips" id="an-board-bar"></div>
+        </div>
+        <div class="an-filter-block">
+          <div class="an-filter-label">标签</div>
+          <div class="an-chips" id="an-tag-bar"></div>
+        </div>
+      </div>
+      <div class="an-panel">
+        <div class="an-panel-title">完成热力图</div>
+        <div class="hm-scroll">
+          <div class="hm-wrap">
+            <div class="hm-days"><div></div><div>一</div><div></div><div>三</div><div></div><div>五</div><div></div></div>
+            <div>
+              <div class="hm-months" id="hm-months"></div>
+              <div class="heatmap" id="heatmap"></div>
+            </div>
+          </div>
+        </div>
+        <div class="hm-legend">
+          <span>少</span>
+          <div class="lc" style="background:var(--hm-0)"></div>
+          <div class="lc" style="background:var(--hm-1)"></div>
+          <div class="lc" style="background:var(--hm-2)"></div>
+          <div class="lc" style="background:var(--hm-3)"></div>
+          <div class="lc" style="background:var(--hm-4)"></div>
+          <span>多</span>
+        </div>
+      </div>
+      <div class="an-panel-title an-daily-title">按天清单</div>
+      <div id="an-daily"></div>
+    </div>
+  </div>
+</div>
+
+<div id="an-tip" class="an-tip" style="display:none"></div>
+
+<dialog id="todo-dialog">
+  <form id="todo-form" method="dialog">
+    <h3 id="dialog-title">新增待办</h3>
+    <label>内容
+      <input type="text" id="f-content" required autocomplete="off" placeholder="要做什么？">
+    </label>
+    <div class="form-row">
+      <label>标签
+        <input type="text" id="f-tag" list="tag-options" autocomplete="off" placeholder="可选">
+        <datalist id="tag-options"></datalist>
+      </label>
+      <label>日期
+        <input type="date" id="f-date">
+      </label>
+    </div>
+    <label>所属便签
+      <select id="f-board"></select>
+    </label>
+    <label>备注
+      <textarea id="f-notes" rows="3" placeholder="可选"></textarea>
+    </label>
+    <div class="dialog-actions">
+      <button type="button" id="btn-delete" class="btn danger" hidden>删除</button>
+      <span class="spacer"></span>
+      <button type="button" id="btn-cancel" class="btn">取消</button>
+      <button type="submit" id="btn-save" class="btn primary">保存</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="analytics.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

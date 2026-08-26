@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+venv/
+env/
+
+# 构建产物
+build/
+dist/
+*.spec
+
+# 本地数据（运行时生成）
+data/
+archives/
+DoneList/
+*.db
+*.db-journal
+
+# 本地开发记录
+.learnings/
+
+# IDE / 系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
